@@ -13,6 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
 	NODE_CATEGORIES,
 	type CreateNodePayload,
 	type NodeCategory,
@@ -22,18 +29,30 @@ type CreateNodeDialogProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	onSubmit: (payload: CreateNodePayload) => void;
+	mode?: "create" | "edit";
+	initialValues?: CreateNodePayload;
 };
 
 export default function CreateNodeDialog({
 	isOpen,
 	onClose,
 	onSubmit,
+	mode = "create",
+	initialValues,
 }: CreateNodeDialogProps) {
-	const [category, setCategory] = useState<NodeCategory>(NODE_CATEGORIES[0]);
-	const [nodeName, setNodeName] = useState("");
+	const [activeTab, setActiveTab] = useState<"title" | "description">("title");
+	const [category, setCategory] = useState<NodeCategory>(
+		initialValues?.category ?? NODE_CATEGORIES[0],
+	);
+	const [nodeTitle, setNodeTitle] = useState(initialValues?.title ?? "");
+	const [nodeDescription, setNodeDescription] = useState(initialValues?.description ?? "");
 
 	function handleCreateNode() {
-		onSubmit({ category, name: nodeName });
+		onSubmit({
+			category,
+			title: nodeTitle,
+			description: nodeDescription,
+		});
 		onClose();
 	}
 
@@ -47,38 +66,82 @@ export default function CreateNodeDialog({
 		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Criar novo node</DialogTitle>
+					<DialogTitle>
+						{mode === "edit" ? "Editar node" : "Criar novo node"}
+					</DialogTitle>
 					<DialogDescription>
-						Escolha a categoria e defina um nome para o node.
+						{mode === "edit"
+							? "Atualize categoria, título e descrição do node selecionado."
+							: "Escolha a categoria e preencha título e descrição do node."}
 					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="node-category">Categoria</Label>
-						<select
-							id="node-category"
-							className="h-9 w-full rounded-md border border-black/15 bg-background px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black/30 dark:border-white/15 dark:focus-visible:ring-white/30"
+						<Select
 							value={category}
-							onChange={(event) => setCategory(event.target.value as NodeCategory)}
+							onValueChange={(value) => setCategory(value as NodeCategory)}
 						>
-							{NODE_CATEGORIES.map((currentCategory) => (
-								<option key={currentCategory} value={currentCategory}>
-									{currentCategory}
-								</option>
-							))}
-						</select>
+							<SelectTrigger id="node-category">
+								<SelectValue placeholder="Selecione uma categoria" />
+							</SelectTrigger>
+							<SelectContent>
+								{NODE_CATEGORIES.map((currentCategory) => (
+									<SelectItem key={currentCategory} value={currentCategory}>
+										{currentCategory}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="node-name">Nome do node</Label>
-						<Input
-							id="node-name"
-							name="nodeName"
-							placeholder="Ex.: Captura Principal"
-							value={nodeName}
-							onChange={(event) => setNodeName(event.target.value)}
-						/>
+						<div className="space-y-2">
+							<Label>Conteúdo do node</Label>
+							<div className="grid grid-cols-2 gap-2 rounded-md border border-black/15 p-1 dark:border-white/15">
+								<Button
+									type="button"
+									variant={activeTab === "title" ? "default" : "outline"}
+									size="sm"
+									onClick={() => setActiveTab("title")}
+								>
+									Título
+								</Button>
+								<Button
+									type="button"
+									variant={activeTab === "description" ? "default" : "outline"}
+									size="sm"
+									onClick={() => setActiveTab("description")}
+								>
+									Descrição
+								</Button>
+							</div>
+
+							{activeTab === "title" ? (
+								<div className="space-y-2">
+									<Label htmlFor="node-title">Título do node</Label>
+									<Input
+										id="node-title"
+										name="nodeTitle"
+										placeholder="Ex.: Campanha Inicial"
+										value={nodeTitle}
+										onChange={(event) => setNodeTitle(event.target.value)}
+									/>
+								</div>
+							) : (
+								<div className="space-y-2">
+									<Label htmlFor="node-description">Descrição</Label>
+									<Input
+										id="node-description"
+										name="nodeDescription"
+										placeholder="Ex.: Primeira etapa do funil"
+										value={nodeDescription}
+										onChange={(event) => setNodeDescription(event.target.value)}
+									/>
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 
@@ -87,7 +150,7 @@ export default function CreateNodeDialog({
 						Cancelar
 					</Button>
 					<Button type="button" onClick={handleCreateNode}>
-						Criar node
+						{mode === "edit" ? "Salvar" : "Criar node"}
 					</Button>
 				</DialogFooter>
 			</DialogContent>
