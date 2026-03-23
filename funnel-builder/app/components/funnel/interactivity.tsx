@@ -1,21 +1,17 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import {
-  addEdge,
   Background,
   Controls,
   ReactFlow,
-  applyEdgeChanges,
-  applyNodeChanges,
-  type Connection,
   type Edge,
-  type EdgeChange,
   type Node,
-  type NodeChange,
+  type OnConnect,
+  type OnEdgesChange,
+  type OnNodesChange,
 } from "@xyflow/react";
 
-const initialNodes: Node[] = [
+export const initialNodes: Node[] = [
   {
     id: "n1",
     position: { x: 0, y: 0 },
@@ -29,24 +25,23 @@ const initialNodes: Node[] = [
   },
 ];
 
-const initialEdges: Edge[] = [];
+export const initialEdges: Edge[] = [];
 
-export default function Interactivity() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+type InteractivityProps = {
+  nodes: Node[];
+  edges: Edge[];
+  onNodesChange: OnNodesChange<Node>;
+  onEdgesChange: OnEdgesChange<Edge>;
+  onConnect: OnConnect;
+};
 
-  const onNodesChange = useCallback((changes: NodeChange[]) => {
-    setNodes((currentNodes) => applyNodeChanges(changes, currentNodes));
-  }, []);
-
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
-    setEdges((currentEdges) => applyEdgeChanges(changes, currentEdges));
-  }, []);
-
-  const onConnect = useCallback((params: Connection) => {
-    setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
-  }, []);
-
+export default function Interactivity({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onConnect,
+}: InteractivityProps) {
   return (
     <ReactFlow
       nodes={nodes}
