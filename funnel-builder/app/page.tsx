@@ -1,9 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import FunnelBuilder from "@/app/components/funnel/funnel-builder";
-import { initialEdges, initialNodes } from "@/app/components/funnel/interactivity";
-import Header from "@/app/components/header/header";
+import FunnelBuilder from "@/components/funnel/funnel-builder";
+import { initialEdges, initialNodes } from "@/components/funnel/interactivity";
+import Header from "@/components/header/header";
+import {
+  formatNodeLabel,
+  type CreateNodePayload,
+} from "@/lib/funnel-node";
 import {
   addEdge,
   applyEdgeChanges,
@@ -31,12 +35,12 @@ export default function Home() {
     setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
   }, []);
 
-  const handleCreateNode = useCallback(() => {
+  const handleCreateNode = useCallback((payload: CreateNodePayload) => {
     setNodes((currentNodes) => {
-      const highestNodeNumber = currentNodes.reduce((highest, node) => {
-        const parsed = Number.parseInt(String(node.data?.label).replace(/\D/g, ""), 10);
-        return Number.isNaN(parsed) ? highest : Math.max(highest, parsed);
-      }, 0);
+      const nodesInCurrentCategory = currentNodes.filter(
+        (node) => node.data?.category === payload.category
+      ).length;
+      const nodeName = payload.name.trim() || `${payload.category} ${nodesInCurrentCategory + 1}`;
 
       const lastNode = currentNodes[currentNodes.length - 1];
       const nextPosition = lastNode
@@ -46,7 +50,11 @@ export default function Home() {
       const newNode: Node = {
         id: `n${Date.now()}`,
         position: nextPosition,
-        data: { label: `Node ${highestNodeNumber + 1}` },
+        data: {
+          category: payload.category,
+          name: nodeName,
+          label: formatNodeLabel(payload.category, nodeName),
+        },
       };
 
       return [...currentNodes, newNode];

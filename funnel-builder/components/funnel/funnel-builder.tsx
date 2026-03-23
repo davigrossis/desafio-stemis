@@ -1,6 +1,6 @@
 "use client";
 
-import Interactivity from "@/app/components/funnel/interactivity";
+import Interactivity from "@/components/funnel/interactivity";
 import type { Edge, Node, OnConnect, OnEdgesChange, OnNodesChange } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 

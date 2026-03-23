@@ -10,18 +10,27 @@ import {
   type OnEdgesChange,
   type OnNodesChange,
 } from "@xyflow/react";
+import { formatNodeLabel } from "@/lib/funnel-node";
 
 export const initialNodes: Node[] = [
   {
     id: "n1",
     position: { x: 0, y: 0 },
-    data: { label: "Node 1" },
+    data: {
+      category: "Anuncio",
+      name: "Campanha Inicial",
+      label: formatNodeLabel("Anuncio", "Campanha Inicial"),
+    },
     type: "input",
   },
   {
     id: "n2",
     position: { x: 100, y: 100 },
-    data: { label: "Node 2" },
+    data: {
+      category: "Pagina",
+      name: "Landing Principal",
+      label: formatNodeLabel("Pagina", "Landing Principal"),
+    },
   },
 ];
 

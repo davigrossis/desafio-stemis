@@ -3,6 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #0a0505;
+  --category-ad: #2563eb;
+  --category-landing: #7c3aed;
+  --category-form: #0891b2;
+  --category-checkout: #16a34a;
 }
 
 @theme inline {
