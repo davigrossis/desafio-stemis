@@ -18,6 +18,9 @@ type FunnelCustomNodeProps = NodeProps<FunnelRenderNode>;
 
 export default function FunnelCustomNode({ id, data, selected }: FunnelCustomNodeProps) {
 	const categoryColor = NODE_CATEGORY_COLORS[data.category];
+	const formattedAccesses = new Intl.NumberFormat("pt-BR").format(data.metrics.accesses);
+	const formattedConversions = new Intl.NumberFormat("pt-BR").format(data.metrics.conversions);
+	const formattedRate = `${data.metrics.rate.toFixed(1)}%`;
 
 	return (
 		<div
@@ -63,6 +66,21 @@ export default function FunnelCustomNode({ id, data, selected }: FunnelCustomNod
 				<div className="text-sm font-semibold text-foreground">{data.title}</div>
 				<div className="text-xs text-foreground/70">
 					{data.description || "Sem descrição"}
+				</div>
+
+				<div className="grid grid-cols-3 gap-1 rounded-md border border-black/10 bg-muted/35 p-2 text-center dark:border-white/10">
+					<div>
+						<div className="text-[10px] uppercase tracking-wide text-foreground/60">Acessos</div>
+						<div className="text-xs font-semibold text-foreground">{formattedAccesses}</div>
+					</div>
+					<div>
+						<div className="text-[10px] uppercase tracking-wide text-foreground/60">Conversões</div>
+						<div className="text-xs font-semibold text-foreground">{formattedConversions}</div>
+					</div>
+					<div>
+						<div className="text-[10px] uppercase tracking-wide text-foreground/60">Taxa</div>
+						<div className="text-xs font-semibold text-foreground">{formattedRate}</div>
+					</div>
 				</div>
 			</div>
 

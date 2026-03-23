@@ -15,6 +15,7 @@ import {
 import FunnelCustomNode from "@/components/funnel/nodes/funnel-custom-node";
 import {
   FUNNEL_NODE_TYPE,
+  generateSimulatedNodeMetrics,
   type FunnelFlowNode,
   type FunnelRenderNode,
 } from "@/lib/funnel-node";
@@ -27,6 +28,7 @@ export const initialNodes: FunnelFlowNode[] = [
       category: "Anuncio",
       title: "Campanha Inicial",
       description: "Campanha principal de aquisição.",
+      metrics: generateSimulatedNodeMetrics("n1", "Anuncio"),
     },
     type: FUNNEL_NODE_TYPE,
   },
@@ -37,6 +39,7 @@ export const initialNodes: FunnelFlowNode[] = [
       category: "Pagina",
       title: "Landing Principal",
       description: "Página com proposta e formulário de captura.",
+      metrics: generateSimulatedNodeMetrics("n2", "Pagina"),
     },
     type: FUNNEL_NODE_TYPE,
   },

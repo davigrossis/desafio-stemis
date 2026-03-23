@@ -31,12 +31,12 @@ export default function Header({ onCreateNode }: HeaderProps) {
 					</h1>
 
 					<div className="flex items-center gap-2">
-						<Button type="button" variant="outline" onClick={handleOpenCreateNodeDialog}>
+						<Button
+							type="button"
+							onClick={handleOpenCreateNodeDialog}
+							className="px-5 font-semibold"
+						>
 							Novo node
-						</Button>
-
-						<Button type="button">
-							Mais ações
 						</Button>
 					</div>
 				</div>

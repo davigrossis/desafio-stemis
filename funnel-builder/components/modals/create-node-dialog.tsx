@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import NodeFormFields from "@/components/modals/node-form-fields";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -10,15 +11,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import {
 	NODE_CATEGORIES,
 	type CreateNodePayload,
@@ -76,74 +68,16 @@ export default function CreateNodeDialog({
 					</DialogDescription>
 				</DialogHeader>
 
-				<div className="space-y-4">
-					<div className="space-y-2">
-						<Label htmlFor="node-category">Categoria</Label>
-						<Select
-							value={category}
-							onValueChange={(value) => setCategory(value as NodeCategory)}
-						>
-							<SelectTrigger id="node-category">
-								<SelectValue placeholder="Selecione uma categoria" />
-							</SelectTrigger>
-							<SelectContent>
-								{NODE_CATEGORIES.map((currentCategory) => (
-									<SelectItem key={currentCategory} value={currentCategory}>
-										{currentCategory}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-
-					<div className="space-y-2">
-						<div className="space-y-2">
-							<Label>Conteúdo do node</Label>
-							<div className="grid grid-cols-2 gap-2 rounded-md border border-black/15 p-1 dark:border-white/15">
-								<Button
-									type="button"
-									variant={activeTab === "title" ? "default" : "outline"}
-									size="sm"
-									onClick={() => setActiveTab("title")}
-								>
-									Título
-								</Button>
-								<Button
-									type="button"
-									variant={activeTab === "description" ? "default" : "outline"}
-									size="sm"
-									onClick={() => setActiveTab("description")}
-								>
-									Descrição
-								</Button>
-							</div>
-
-							{activeTab === "title" ? (
-								<div className="space-y-2">
-									<Label htmlFor="node-title">Título do node</Label>
-									<Input
-										id="node-title"
-										name="nodeTitle"
-										placeholder="Ex.: Campanha Inicial"
-										value={nodeTitle}
-										onChange={(event) => setNodeTitle(event.target.value)}
-									/>
-								</div>
-							) : (
-								<div className="space-y-2">
-									<Label htmlFor="node-description">Descrição</Label>
-									<Input
-										id="node-description"
-										name="nodeDescription"
-										placeholder="Ex.: Primeira etapa do funil"
-										value={nodeDescription}
-										onChange={(event) => setNodeDescription(event.target.value)}
-									/>
-								</div>
-							)}
-						</div>
-					</div>
-				</div>
+				<NodeFormFields
+					category={category}
+					onCategoryChange={setCategory}
+					activeTab={activeTab}
+					onActiveTabChange={setActiveTab}
+					nodeTitle={nodeTitle}
+					onNodeTitleChange={setNodeTitle}
+					nodeDescription={nodeDescription}
+					onNodeDescriptionChange={setNodeDescription}
+				/>
 
 				<DialogFooter className="mt-2 gap-2">
 					<Button type="button" variant="outline" onClick={onClose}>

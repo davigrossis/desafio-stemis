@@ -1,16 +1,22 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FunnelBuilder from "@/components/funnel/funnel-builder";
 import { initialEdges, initialNodes } from "@/components/funnel/interactivity";
 import Header from "@/components/header/header";
 import CreateNodeDialog from "@/components/modals/create-node-dialog";
 import DeleteNodeDialog from "@/components/modals/delete-node-dialog";
 import {
-  FUNNEL_NODE_TYPE,
   type CreateNodePayload,
   type FunnelFlowNode,
 } from "@/lib/funnel-node";
+import {
+  createNodeFromPayload,
+  removeEdgesConnectedToNode,
+  removeNodeById,
+  updateNodeByPayload,
+} from "@/lib/funnel-graph";
+import { loadFunnelGraph, saveFunnelGraph } from "@/lib/funnel-storage";
 import {
   addEdge,
   applyEdgeChanges,
@@ -24,29 +30,13 @@ import {
 export default function Home() {
   const [nodes, setNodes] = useState<FunnelFlowNode[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [isStorageHydrated, setIsStorageHydrated] = useState(false);
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [deleteNodeId, setDeleteNodeId] = useState<string | null>(null);
   const [editDialogVersion, setEditDialogVersion] = useState(0);
 
   const editingNode = nodes.find((node) => node.id === editingNodeId);
   const deletingNode = nodes.find((node) => node.id === deleteNodeId);
-
-  const buildNodeTitle = useCallback(
-    (payload: CreateNodePayload, currentNodes: FunnelFlowNode[], excludeNodeId?: string) => {
-      const sanitizedTitle = payload.title.trim();
-
-      if (sanitizedTitle) {
-        return sanitizedTitle;
-      }
-
-      const nodesInCurrentCategory = currentNodes.filter(
-        (node) => node.id !== excludeNodeId && node.data.category === payload.category,
-      ).length;
-
-      return `${payload.category} ${nodesInCurrentCategory + 1}`;
-    },
-    [],
-  );
 
   const onNodesChange = useCallback((changes: NodeChange<FunnelFlowNode>[]) => {
     setNodes((currentNodes) => applyNodeChanges(changes, currentNodes));
@@ -62,28 +52,12 @@ export default function Home() {
 
   const handleCreateNode = useCallback((payload: CreateNodePayload) => {
     setNodes((currentNodes) => {
-      const nodeTitle = buildNodeTitle(payload, currentNodes);
-      const nodeDescription = payload.description.trim();
-
-      const lastNode = currentNodes[currentNodes.length - 1];
-      const nextPosition = lastNode
-        ? { x: lastNode.position.x + 100, y: lastNode.position.y + 100 }
-        : { x: 0, y: 0 };
-
-      const newNode: FunnelFlowNode = {
-        id: `n${Date.now()}`,
-        type: FUNNEL_NODE_TYPE,
-        position: nextPosition,
-        data: {
-          category: payload.category,
-          title: nodeTitle,
-          description: nodeDescription,
-        },
-      };
+      const nodeId = `n${Date.now()}`;
+      const newNode = createNodeFromPayload(payload, currentNodes, nodeId);
 
       return [...currentNodes, newNode];
     });
-  }, [buildNodeTitle]);
+  }, []);
 
   const handleOpenEditNode = useCallback((nodeId: string) => {
     setEditingNodeId(nodeId);
@@ -101,29 +75,18 @@ export default function Home() {
       }
 
       setNodes((currentNodes) => {
-        const nodeTitle = buildNodeTitle(payload, currentNodes, editingNodeId);
-        const nodeDescription = payload.description.trim();
-
         return currentNodes.map((node) => {
           if (node.id !== editingNodeId) {
             return node;
           }
 
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              category: payload.category,
-              title: nodeTitle,
-              description: nodeDescription,
-            },
-          };
+          return updateNodeByPayload(node, payload, currentNodes, editingNodeId);
         });
       });
 
       setEditingNodeId(null);
     },
-    [buildNodeTitle, editingNodeId],
+    [editingNodeId],
   );
 
   const handleOpenDeleteNodeDialog = useCallback((nodeId: string) => {
@@ -139,12 +102,8 @@ export default function Home() {
       return;
     }
 
-    setNodes((currentNodes) => currentNodes.filter((node) => node.id !== deleteNodeId));
-    setEdges((currentEdges) =>
-      currentEdges.filter(
-        (edge) => edge.source !== deleteNodeId && edge.target !== deleteNodeId,
-      ),
-    );
+    setNodes((currentNodes) => removeNodeById(deleteNodeId, currentNodes));
+    setEdges((currentEdges) => removeEdgesConnectedToNode(deleteNodeId, currentEdges));
 
     if (editingNodeId === deleteNodeId) {
       setEditingNodeId(null);
@@ -152,6 +111,35 @@ export default function Home() {
 
     setDeleteNodeId(null);
   }, [deleteNodeId, editingNodeId]);
+
+  useEffect(() => {
+    try {
+      const storedGraph = loadFunnelGraph();
+
+      if (storedGraph.nodes) {
+        setNodes(storedGraph.nodes);
+      }
+
+      if (storedGraph.edges) {
+        setEdges(storedGraph.edges);
+      }
+    } catch {
+
+    } finally {
+      setIsStorageHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isStorageHydrated) {
+      return;
+    }
+
+    try {
+      saveFunnelGraph(nodes, edges);
+    } catch {
+    }
+  }, [nodes, edges, isStorageHydrated]);
 
   return (
     <main className="flex h-screen w-screen flex-col bg-background text-foreground">
