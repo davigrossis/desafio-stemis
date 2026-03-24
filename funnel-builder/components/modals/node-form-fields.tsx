@@ -51,7 +51,7 @@ export default function NodeFormFields({
 
       <div className="space-y-2">
         <div className="space-y-2">
-          <Label>Conteúdo do node</Label>
+          <Label>Conteúdo da etapa</Label>
           <div className="grid grid-cols-2 gap-2 rounded-md border border-black/15 p-1 dark:border-white/15">
             <Button
               type="button"
@@ -73,7 +73,7 @@ export default function NodeFormFields({
 
           {activeTab === "title" ? (
             <div className="space-y-2">
-              <Label htmlFor="node-title">Título do node</Label>
+              <Label htmlFor="node-title">Título da etapa</Label>
               <Input
                 id="node-title"
                 name="nodeTitle"

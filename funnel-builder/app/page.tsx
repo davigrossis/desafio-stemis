@@ -17,6 +17,7 @@ import {
   updateNodeByPayload,
 } from "@/lib/funnel-graph";
 import { loadFunnelGraph, saveFunnelGraph } from "@/lib/funnel-storage";
+import { validateConnection } from "@/lib/funnel-node-guards";
 import {
   addEdge,
   applyEdgeChanges,
@@ -34,6 +35,7 @@ export default function Home() {
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [deleteNodeId, setDeleteNodeId] = useState<string | null>(null);
   const [editDialogVersion, setEditDialogVersion] = useState(0);
+  const [connectionFeedback, setConnectionFeedback] = useState<string | null>(null);
 
   const editingNode = nodes.find((node) => node.id === editingNodeId);
   const deletingNode = nodes.find((node) => node.id === deleteNodeId);
@@ -47,7 +49,16 @@ export default function Home() {
   }, []);
 
   const onConnect = useCallback((params: Connection) => {
-    setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot));
+    setEdges((edgesSnapshot) => {
+      const validation = validateConnection(params, edgesSnapshot);
+
+      if (!validation.isValid) {
+        setConnectionFeedback(validation.reason ?? "Não foi possível criar a conexão.");
+        return edgesSnapshot;
+      }
+
+      return addEdge(params, edgesSnapshot);
+    });
   }, []);
 
   const handleCreateNode = useCallback((payload: CreateNodePayload) => {
@@ -141,11 +152,31 @@ export default function Home() {
     }
   }, [nodes, edges, isStorageHydrated]);
 
+  useEffect(() => {
+    if (!connectionFeedback) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setConnectionFeedback(null);
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [connectionFeedback]);
+
   return (
     <main className="flex h-screen w-screen flex-col bg-background text-foreground">
       <Header onCreateNode={handleCreateNode} />
 
-      <section className="min-h-0 flex-1">
+      <section className="relative min-h-0 flex-1">
+        {connectionFeedback ? (
+          <div className="pointer-events-none absolute left-1/2 top-3 z-10 w-[min(92%,34rem)] -translate-x-1/2 rounded-md border-2 border-amber-300 bg-amber-200 px-3 py-2 text-sm font-semibold text-black/60">
+            {connectionFeedback}
+          </div>
+        ) : null}
+
         <FunnelBuilder
           nodes={nodes}
           edges={edges}

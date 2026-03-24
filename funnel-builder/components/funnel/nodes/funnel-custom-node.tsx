@@ -44,7 +44,7 @@ export default function FunnelCustomNode({ id, data, selected }: FunnelCustomNod
 						onClick={(event) => event.stopPropagation()}
 					>
 						<MoreHorizontal className="h-4 w-4" />
-						<span className="sr-only">Ações do node</span>
+						<span className="sr-only">Ações da etapa</span>
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="nodrag nopan w-36">

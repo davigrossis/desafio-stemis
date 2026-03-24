@@ -59,12 +59,12 @@ export default function CreateNodeDialog({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>
-						{mode === "edit" ? "Editar node" : "Criar novo node"}
+						{mode === "edit" ? "Editar etapa" : "Criar nova etapa"}
 					</DialogTitle>
 					<DialogDescription>
 						{mode === "edit"
-							? "Atualize categoria, título e descrição do node selecionado."
-							: "Escolha a categoria e preencha título e descrição do node."}
+							? "Atualize categoria, título e descrição da etapa selecionada."
+							: "Escolha a categoria e preencha título e descrição da etapa."}
 					</DialogDescription>
 				</DialogHeader>
 
@@ -84,7 +84,7 @@ export default function CreateNodeDialog({
 						Cancelar
 					</Button>
 					<Button type="button" onClick={handleCreateNode}>
-						{mode === "edit" ? "Salvar" : "Criar node"}
+						{mode === "edit" ? "Salvar" : "Criar etapa"}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

@@ -33,11 +33,11 @@ export default function DeleteNodeDialog({
 		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Excluir node</DialogTitle>
+					<DialogTitle>Excluir etapa</DialogTitle>
 					<DialogDescription>
 						{nodeTitle
-							? `Tem certeza que deseja excluir \"${nodeTitle}\"? Essa ação remove também as conexões do node.`
-							: "Tem certeza que deseja excluir este node? Essa ação remove também as conexões do node."}
+							? `Tem certeza que deseja excluir \"${nodeTitle}\"? Essa ação remove também as conexões da etapa.`
+							: "Tem certeza que deseja excluir esta etapa? Essa ação remove também as conexões da etapa."}
 					</DialogDescription>
 				</DialogHeader>
 

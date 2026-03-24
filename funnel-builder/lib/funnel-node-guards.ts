@@ -3,6 +3,12 @@ import {
   type FunnelFlowNode,
   type NodeMetrics,
 } from "@/lib/funnel-node";
+import type { Connection, Edge } from "@xyflow/react";
+
+export type ConnectionValidationResult = {
+  isValid: boolean;
+  reason?: string;
+};
 
 export function isValidNodeMetrics(value: unknown): value is NodeMetrics {
   if (!value || typeof value !== "object") {
@@ -55,4 +61,41 @@ export function ensureNodeWithMetrics(node: FunnelFlowNode): FunnelFlowNode {
       metrics: generateSimulatedNodeMetrics(node.id, node.data.category),
     },
   };
+}
+
+export function validateConnection(
+  connection: Connection,
+  currentEdges: Edge[],
+): ConnectionValidationResult {
+  const source = connection.source;
+  const target = connection.target;
+  const sourceHandle = connection.sourceHandle ?? null;
+  const targetHandle = connection.targetHandle ?? null;
+  const invalid = (reason: string): ConnectionValidationResult => ({ isValid: false, reason });
+
+  if (!source || !target) {
+    return invalid("Selecione origem e destino.");
+  }
+
+  if (source === target) {
+    return invalid("Origem e destino devem ser diferentes.");
+  }
+
+  if (
+    currentEdges.some(
+      (edge) =>
+        edge.source === source &&
+        edge.target === target &&
+        edge.sourceHandle === sourceHandle &&
+        edge.targetHandle === targetHandle,
+    )
+  ) {
+    return invalid("Conexão já existe.");
+  }
+
+  if (currentEdges.some((edge) => edge.target === target)) {
+    return invalid("Destino já possui entrada.");
+  }
+
+  return { isValid: true };
 }

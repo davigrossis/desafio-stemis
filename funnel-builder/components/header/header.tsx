@@ -36,7 +36,7 @@ export default function Header({ onCreateNode }: HeaderProps) {
 							onClick={handleOpenCreateNodeDialog}
 							className="px-5 font-semibold"
 						>
-							Novo node
+							Nova etapa
 						</Button>
 					</div>
 				</div>
