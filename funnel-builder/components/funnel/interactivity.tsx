@@ -12,6 +12,7 @@ import {
   type OnEdgesChange,
   type OnNodesChange,
 } from "@xyflow/react";
+import FunnelMiniMap from "@/components/funnel/funnel-minimap";
 import FunnelCustomNode from "@/components/funnel/nodes/funnel-custom-node";
 import {
   FUNNEL_NODE_TYPE,
@@ -99,9 +100,12 @@ export default function Interactivity({
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
       fitView
+      proOptions={{ hideAttribution: true }}
+      className="bg-background"
     >
-      <Background />
-      <Controls />
+      <Background color="color-mix(in oklab, var(--foreground) 12%, transparent)" gap={20} size={1} />
+      <Controls className="rounded-lg border border-border bg-background/95 shadow-sm backdrop-blur" />
+      <FunnelMiniMap />
     </ReactFlow>
   );
 }

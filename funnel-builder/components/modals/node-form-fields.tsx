@@ -52,7 +52,7 @@ export default function NodeFormFields({
       <div className="space-y-2">
         <div className="space-y-2">
           <Label>Conteúdo da etapa</Label>
-          <div className="grid grid-cols-2 gap-2 rounded-md border border-black/15 p-1 dark:border-white/15">
+          <div className="grid grid-cols-2 gap-2 rounded-md border border-border bg-muted/40 p-1">
             <Button
               type="button"
               variant={activeTab === "title" ? "default" : "outline"}

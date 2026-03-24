@@ -45,7 +45,7 @@ export default function DeleteNodeDialog({
 					<Button type="button" variant="outline" onClick={onClose}>
 						Cancelar
 					</Button>
-					<Button type="button" onClick={onConfirm}>
+					<Button type="button" variant="destructive" onClick={onConfirm}>
 						Excluir
 					</Button>
 				</DialogFooter>
